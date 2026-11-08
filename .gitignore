@@ -1,0 +1,28 @@
+# Node modules
+node_modules/
+client/node_modules/
+server/node_modules/
+
+# Environment variables - IMPORTANT
+.env
+.env.*
+client/.env
+client/.env.*
+server/.env
+server/.env.*
+
+# Build files
+dist/
+client/dist/
+server/dist/
+
+# Logs
+*.log
+npm-debug.log*
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
