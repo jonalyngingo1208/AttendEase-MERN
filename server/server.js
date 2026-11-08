@@ -9,6 +9,7 @@ const authRoutes = require('./routes/authRoutes');
 const studentRoutes = require('./routes/studentRoutes');
 const attendanceRoutes = require('./routes/attendanceRoutes');
 const scheduleRoutes = require('./routes/scheduleRoutes');
+const gradeRoutes = require('./routes/gradeRoutes');
 
 const app = express();
 
@@ -21,6 +22,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/students', studentRoutes);
 app.use('/api/attendance', attendanceRoutes);
 app.use('/api/schedules', scheduleRoutes);
+app.use('/api/grades', gradeRoutes);
 
 // Home Route
 app.get('/', (req, res) => {
@@ -39,6 +41,7 @@ const startServer = async () => {
         console.log('AttendEase Server is Running!');
         console.log(`Server URL: http://localhost:${PORT}`);
         console.log('Schedule API is Connected!');
+        console.log('Grades API is Connected!');
         console.log('================================');
     });
 };

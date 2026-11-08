@@ -7,7 +7,10 @@ import {
   Clock,
   Plus,
   RefreshCw,
-  Search
+  Search,
+  GraduationCap,
+  BookOpen,
+  Award
 } from 'lucide-react';
 
 import API from '../services/api';
@@ -19,6 +22,8 @@ import StudentForm from '../components/StudentForm';
 
 function Dashboard() {
   const [students, setStudents] = useState([]);
+  const [grades, setGrades] = useState([]);
+
   const [summary, setSummary] = useState({
     present: 0,
     absent: 0,
@@ -32,36 +37,66 @@ function Dashboard() {
 
   // FETCH DASHBOARD DATA
   const fetchDashboardData = async () => {
-    try {
-      setLoading(true);
+    setLoading(true);
 
-      const [studentResponse, summaryResponse] = await Promise.all([
-        API.get('/students'),
-        API.get('/attendance/summary/today')
-      ]);
+    const results = await Promise.allSettled([
+      API.get('/students'),
+      API.get('/attendance/summary/today'),
+      API.get('/grades')
+    ]);
 
-      setStudents(studentResponse.data);
+    // STUDENTS
+    if (results[0].status === 'fulfilled') {
+      setStudents(results[0].value.data || []);
+    } else {
+      console.error('Students API Error:', results[0].reason);
+    }
+
+    // ATTENDANCE
+    if (results[1].status === 'fulfilled') {
+      const data = results[1].value.data || {};
 
       setSummary({
-        present: summaryResponse.data.present || 0,
-        absent: summaryResponse.data.absent || 0,
-        late: summaryResponse.data.late || 0
+        present: data.present || 0,
+        absent: data.absent || 0,
+        late: data.late || 0
       });
-
-    } catch (error) {
-      console.error('Dashboard Error:', error);
-      alert(
-        error.response?.data?.message ||
-        'Failed to load dashboard data.'
-      );
-    } finally {
-      setLoading(false);
+    } else {
+      console.error('Attendance API Error:', results[1].reason);
     }
+
+    // GRADES
+    if (results[2].status === 'fulfilled') {
+      setGrades(results[2].value.data || []);
+    } else {
+      console.error('Grades API Error:', results[2].reason);
+      setGrades([]);
+    }
+
+    setLoading(false);
   };
 
   useEffect(() => {
     fetchDashboardData();
   }, []);
+
+  // GRADE SUMMARY
+  const firstSemesterGrades = grades.filter(
+    (item) => item.semester === 'First Semester'
+  );
+
+  const secondSemesterGrades = grades.filter(
+    (item) => item.semester === 'Second Semester'
+  );
+
+  const averageGrade = grades.length
+    ? (
+        grades.reduce(
+          (total, item) => total + Number(item.grade || 0),
+          0
+        ) / grades.length
+      ).toFixed(2)
+    : '0.00';
 
   // ADD OR UPDATE STUDENT
   const handleSubmit = async (formData) => {
@@ -121,7 +156,7 @@ function Dashboard() {
     }
   };
 
-  // CLOSE STUDENT FORM
+  // CLOSE FORM
   const closeForm = () => {
     setIsOpen(false);
     setEditingStudent(null);
@@ -152,12 +187,10 @@ function Dashboard() {
         <section className="welcome-banner">
           <div>
             <span>ATTENDANCE MANAGEMENT SYSTEM</span>
-
             <h1>Manage your students with ease.</h1>
-
             <p>
-              Monitor student records and keep your academic
-              data organized.
+              Monitor student records, attendance,
+              and academic grades in one place.
             </p>
           </div>
 
@@ -166,7 +199,7 @@ function Dashboard() {
           </div>
         </section>
 
-        {/* DASHBOARD STATISTICS */}
+        {/* ATTENDANCE STATISTICS */}
         <section className="stats-grid">
           <StatCard
             title="Total Students"
@@ -201,20 +234,63 @@ function Dashboard() {
           />
         </section>
 
+        {/* GRADES OVERVIEW */}
+        <section className="records-section">
+          <div className="section-heading">
+            <div>
+              <h2>Academic Grades Overview</h2>
+              <p>
+                First and Second Semester academic records.
+              </p>
+            </div>
+          </div>
+
+          <section className="stats-grid">
+            <StatCard
+              title="Total Grades"
+              value={grades.length}
+              icon={GraduationCap}
+              color="purple"
+              description="Recorded grades"
+            />
+
+            <StatCard
+              title="First Semester"
+              value={firstSemesterGrades.length}
+              icon={BookOpen}
+              color="green"
+              description="Grade records"
+            />
+
+            <StatCard
+              title="Second Semester"
+              value={secondSemesterGrades.length}
+              icon={BookOpen}
+              color="orange"
+              description="Grade records"
+            />
+
+            <StatCard
+              title="Average Grade"
+              value={averageGrade}
+              icon={Award}
+              color="red"
+              description="All recorded grades"
+            />
+          </section>
+        </section>
+
         {/* STUDENT RECORDS */}
         <section className="records-section" id="students">
           <div className="section-heading">
             <div>
               <h2>Student Records</h2>
-
               <p>
                 Manage and organize all registered students.
               </p>
             </div>
 
             <div className="record-actions">
-
-              {/* SEARCH */}
               <div className="student-search-wrapper">
                 <Search size={17} />
 
@@ -222,14 +298,11 @@ function Dashboard() {
                   type="text"
                   placeholder="Search student..."
                   value={searchTerm}
-                  onChange={(e) =>
-                    setSearchTerm(e.target.value)
-                  }
+                  onChange={(e) => setSearchTerm(e.target.value)}
                   className="student-search"
                 />
               </div>
 
-              {/* REFRESH */}
               <button
                 className="refresh-btn"
                 onClick={fetchDashboardData}
@@ -239,7 +312,6 @@ function Dashboard() {
                 Refresh
               </button>
 
-              {/* ADD STUDENT */}
               <button
                 className="add-btn"
                 onClick={() => {
@@ -250,7 +322,6 @@ function Dashboard() {
                 <Plus size={18} />
                 Add Student
               </button>
-
             </div>
           </div>
 
@@ -268,7 +339,6 @@ function Dashboard() {
         </footer>
       </main>
 
-      {/* STUDENT FORM */}
       <StudentForm
         isOpen={isOpen}
         onClose={closeForm}

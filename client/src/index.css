@@ -1,21 +1,30 @@
-
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-
 * {
-  margin: 0;
-  padding: 0;
   box-sizing: border-box;
 }
 
-html, body, #root {
-  width: 100%;
-  min-height: 100%;
+:root {
+  font-family: Arial, sans-serif;
+  color: #493443;
+  background: #fff7fa;
+
+  --primary: #e9a9c5;
+  --primary-dark: #d979a5;
+  --soft-pink: #fcebf2;
+  --light-pink: #fff7fa;
+  --white: #ffffff;
+  --text: #493443;
 }
 
 body {
-  font-family: 'Inter', sans-serif;
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background: var(--light-pink);
 }
 
-button, input, select {
+button,
+input,
+select,
+textarea {
   font: inherit;
 }

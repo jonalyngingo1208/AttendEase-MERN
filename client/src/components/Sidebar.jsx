@@ -10,7 +10,11 @@ import {
   LogOut
 } from 'lucide-react';
 
-import { NavLink, useNavigate, useLocation } from 'react-router-dom';
+import {
+  NavLink,
+  useNavigate,
+  useLocation
+} from 'react-router-dom';
 
 function Sidebar() {
   const navigate = useNavigate();
@@ -28,6 +32,7 @@ function Sidebar() {
   const handleStudentsClick = () => {
     if (location.pathname !== '/') {
       navigate('/');
+
       setTimeout(() => {
         document.getElementById('students')?.scrollIntoView({
           behavior: 'smooth'
@@ -43,6 +48,7 @@ function Sidebar() {
   return (
     <aside className="sidebar">
 
+      {/* BRAND */}
       <div className="brand">
         <div className="brand-icon">
           <GraduationCap size={26} />
@@ -56,52 +62,83 @@ function Sidebar() {
 
       <p className="menu-label">MAIN MENU</p>
 
+      {/* NAVIGATION MENU */}
       <nav className="menu">
 
-        <NavLink to="/" end className={({ isActive }) =>
-          `menu-item ${isActive ? 'active' : ''}`
-        }>
+        <NavLink
+          to="/"
+          end
+          className={({ isActive }) =>
+            `menu-item ${isActive ? 'active' : ''}`
+          }
+        >
           <LayoutDashboard size={19} />
           Dashboard
         </NavLink>
 
-        <NavLink to="/attendance" className={({ isActive }) =>
-          `menu-item ${isActive ? 'active' : ''}`
-        }>
+        <NavLink
+          to="/attendance"
+          className={({ isActive }) =>
+            `menu-item ${isActive ? 'active' : ''}`
+          }
+        >
           <ClipboardCheck size={19} />
           Attendance
         </NavLink>
 
         <button
           type="button"
-          className="menu-item"
+          className={`menu-item ${
+            location.pathname === '/' ? '' : ''
+          }`}
           onClick={handleStudentsClick}
         >
           <Users size={19} />
           Students
         </button>
 
-        <NavLink to="/schedule" className={({ isActive }) =>
-          `menu-item ${isActive ? 'active' : ''}`
-        }>
+        <NavLink
+          to="/schedule"
+          className={({ isActive }) =>
+            `menu-item ${isActive ? 'active' : ''}`
+          }
+        >
           <CalendarDays size={19} />
           Schedule
         </NavLink>
 
-        <NavLink to="/history" className={({ isActive }) =>
-          `menu-item ${isActive ? 'active' : ''}`
-        }>
+        {/* GRADES */}
+        <NavLink
+          to="/grades"
+          className={({ isActive }) =>
+            `menu-item ${isActive ? 'active' : ''}`
+          }
+        >
+          <GraduationCap size={19} />
+          Grades
+        </NavLink>
+
+        <NavLink
+          to="/history"
+          className={({ isActive }) =>
+            `menu-item ${isActive ? 'active' : ''}`
+          }
+        >
           <CalendarDays size={19} />
           Attendance History
         </NavLink>
 
       </nav>
 
+      {/* SIDEBAR BOTTOM */}
       <div className="sidebar-bottom">
 
-        <NavLink to="/settings" className={({ isActive }) =>
-          `menu-item ${isActive ? 'active' : ''}`
-        }>
+        <NavLink
+          to="/settings"
+          className={({ isActive }) =>
+            `menu-item ${isActive ? 'active' : ''}`
+          }
+        >
           <Settings size={19} />
           Settings
         </NavLink>
